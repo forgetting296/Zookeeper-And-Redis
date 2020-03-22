@@ -1,10 +1,13 @@
 package com.shusaku.study.zk;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.CloseableUtils;
+import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.data.Stat;
 
 /**
  * @program: ZoopeeperAndRedis
@@ -12,6 +15,7 @@ import org.apache.curator.utils.CloseableUtils;
  * @author: Shusaku
  * @create: 2020-03-21 14:14
  */
+@Slf4j
 public class ClientFactory {
 
     /**
@@ -56,4 +60,88 @@ public class ClientFactory {
         //CloseableUtils.closeQuietly(framework);
     }
 
+    //===========================================practice method===================================================
+
+    private void checkNode(String zkAddress,String zkPath) {
+
+        CuratorFramework client = CuratorFrameworkFactory.newClient(zkAddress, new ExponentialBackoffRetry(1000, 3));
+        try {
+            client.start();
+            Stat stat = client.checkExists()
+                    .forPath(zkPath);
+            if(stat == null) {
+                log.info("节点不存在：{}", zkPath);
+            } else {
+                log.info("节点存在：{}", zkPath);
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            CloseableUtils.closeQuietly(client);
+        }
+    }
+
+    private void addNode(String zkAddress, String data, String zkPath) {
+        CuratorFramework client = CuratorFrameworkFactory.newClient(zkAddress, new ExponentialBackoffRetry(1000, 3));
+        try {
+            client.start();
+            client.create()
+                    .creatingParentsIfNeeded()
+                    .withMode(CreateMode.PERSISTENT)
+                    .forPath(zkPath, data.getBytes());
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            CloseableUtils.closeQuietly(client);
+        }
+    }
+
+    private void updateNode(String zkAddress, String data, String zkPath) {
+        CuratorFramework client = CuratorFrameworkFactory.newClient(zkAddress, new ExponentialBackoffRetry(1000, 3));
+        try {
+            client.start();
+            Stat stat = client.checkExists()
+                    .forPath(zkPath);
+            if(stat != null) {
+                client.setData()
+                        .forPath(zkPath, data.getBytes());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            CloseableUtils.closeQuietly(client);
+        }
+    }
+
+    private void deleteNode(String zkAddress, String zkPath) {
+        CuratorFramework client = CuratorFrameworkFactory.newClient(zkAddress, new ExponentialBackoffRetry(1000, 3));
+        try {
+            client.start();
+            Stat stat = client.checkExists()
+                    .forPath(zkPath);
+            if(stat != null) {
+                client.delete()
+                        .forPath(zkPath);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            CloseableUtils.closeQuietly(client);
+        }
+    }
+
+    private void selectNode(String zkAddress, String data, String zkPath) {
+        CuratorFramework client = CuratorFrameworkFactory.newClient(zkAddress, new ExponentialBackoffRetry(1000, 3));
+        try {
+            client.start();
+            if(client.checkExists().forPath(zkPath) != null) {
+                byte[] bytes = client.getData().forPath(zkPath);
+                log.info("节点内容：{}", new String(bytes));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            CloseableUtils.closeQuietly(client);
+        }
+    }
 }
