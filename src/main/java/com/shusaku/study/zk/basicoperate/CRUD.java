@@ -16,7 +16,8 @@ import java.util.List;
 
 /**
  * @program: ZoopeeperAndRedis
- * @description:
+ * @description:  本机的伪分布式系统  共三个zookeeper节点  全都启动以后运行以下代码才不会报错  否侧会 connection refused
+ *              正常是一半的节点启动就ok的  这个没有太去纠结
  * @author: Shusaku
  * @create: 2020-03-21 15:39
  */
