@@ -199,13 +199,13 @@ public class ZkWatcherDemo {
                         TreeCacheEvent.Type type = treeCacheEvent.getType();
                         switch (type) {
                             case NODE_ADDED:
-
+                                log.info("[TreeCache] 节点增加，　path = {}, data = {}", data.getPath(), data.getData());
                                 break;
                             case NODE_UPDATED:
-
+                                log.info("[TreeCache] 节点更新，　path = {}, data = {}", data.getPath(), data.getData());
                                 break;
                             case NODE_REMOVED:
-
+                                log.info("[TreeCache] 节点删除，　path = {}, data = {}", data.getPath(), data.getData());
                                 break;
                             default:
                                 break;
