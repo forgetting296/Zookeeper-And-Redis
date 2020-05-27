@@ -67,7 +67,7 @@ public class ZkWatcherDemo {
     }
 
     @Test
-    public void testNOdeCache() {
+    public void testNodeCache() {
 
         CuratorFramework client = ZkClient.instance.getClient();
 
